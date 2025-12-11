@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Quiz</title>
+	<link rel="icon"  href="favicon.png">
+	<style>
+		/* السؤال */
+#quiz .p {
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 20px;
+	color: #333;
+	text-align: center;
+}
+
+/* خيارات */
+.options {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.option {
+	background: #f9f9f9;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	padding: 12px;
+	cursor: pointer;
+	transition: 0.3s;
+}
+
+.option:hover {
+	background: #eef;
+	border-color: #007acc;
+}
+
+.option input[type="radio"] {
+	margin-right: 10px;
+	accent-color: #007acc;
+}
+
+.option.selected {
+	background: #007acc;
+	color: #fff;
+	border-color: #005f99;
+}
+
+/* زرار حديث */
+.btn {
+	display: block;
+	margin: 20px auto;
+	padding: 12px 24px;
+	background: linear-gradient(90deg, #007acc, #00c6ff);
+	color: #fff;
+	font-size: 16px;
+	font-weight: bold;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: 0.3s;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+	transform: translateY(0);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* شاشة عرض النقاط */
+#score {
+	display: none;
+	margin-top: 30px;
+	text-align: center;
+}
+
+.score-box {
+	background: #fff;
+	border-radius: 12px;
+	padding: 30px;
+	max-width: 400px;
+	margin: auto;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.score-box h2 {
+	margin-bottom: 20px;
+	color: #007acc;
+}
+
+.score-box p {
+	font-size: 20px;
+	font-weight: bold;
+	color: #333;
+}
+
+    html {
+  		cursor: url('Normal Select.cur') 0 0, auto;
+	}
+
+
+    ::selection {
+      background: orange;
+      color: #fff;
+    }
+
+	</style>
+</head>
+<body>
+
+	<div id="quiz"></div>
+<button id="nextBtn" class="btn">Next</button>
+<div id="score"></div>
+
+<script>
+	// الأسئلة مع الإجابة الصحيحة
+const questions = [
+	{
+		question: "TikTok is famous for spreading new ......... quickly.",
+		options: ["generation", "balance", "trends", "memes"],
+		correct: "trends"
+	},
+	{
+		question: "Memes are funny pictures or videos that ............ on the internet.",
+		options: ["wonder", "balance", "spread", "spend"],
+		correct: "spread"
+	},
+	{
+		question: "Students should limit their ...... to protect their health.",
+		options: ["memes", "hobbies", "screen time", "modern world"],
+		correct: "screen time"
+	}
+];
+
+let currentQuestion = 0;
+let score = 0;
+
+const quizDiv = document.getElementById("quiz");
+const nextBtn = document.getElementById("nextBtn");
+const scoreDiv = document.getElementById("score");
+
+// عرض السؤال
+function showQuestion(index) {
+	const q = questions[index];
+	quizDiv.innerHTML = `
+    <p class="p">${q.question}</p>
+    <div class="options">
+      ${q.options
+							.map(
+								(opt) => `
+        <div class="option">
+          <label>
+            <input type="radio" name="option" value="${opt}">
+            ${opt}
+          </label>
+        </div>
+      `
+	)
+							.join("")}
+    </div>
+  `;
+
+	// تفاعل عند الضغط على الاختيار
+	document.querySelectorAll(".option").forEach((optDiv) => {
+		optDiv.addEventListener("click", () => {
+			document
+				.querySelectorAll(".option")
+				.forEach((o) => o.classList.remove("selected"));
+			optDiv.classList.add("selected");
+			optDiv.querySelector("input").checked = true;
+		});
+	});
+}
+
+// أول سؤال
+showQuestion(currentQuestion);
+
+// عند الضغط على Next
+nextBtn.addEventListener("click", () => {
+	const selected = document.querySelector("input[name='option']:checked");
+	if (!selected) {
+		alert("Please select an answer");
+		return;
+	}
+
+	// تحقق من الإجابة
+	if (selected.value === questions[currentQuestion].correct) {
+		score++;
+	}
+
+	currentQuestion++;
+	if (currentQuestion < questions.length) {
+		showQuestion(currentQuestion);
+	} else {
+		quizDiv.innerHTML = "";
+		scoreDiv.style.display = "block";
+		scoreDiv.innerHTML = `
+      <div class="score-box">
+        <h2>Quiz Finished 🎉</h2>
+        <p>Your score: ${score} / ${questions.length}</p>
+		<p>This is just a small test to showcase my skills.</p>
+      </div>
+    `;
+		nextBtn.style.display = "none";
+	}
+});
+
+</script>
+
+</body>
+</html>
